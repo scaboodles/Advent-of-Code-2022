@@ -15,7 +15,7 @@ class Rock:
                 self.x = min(self.x + 1, 6 - self.width)
     
     def drop(self):
-        self.y -=1 
+        self.y -= 1 
 
     def settle(self,cave):
         return cave.add_occupied(self.get_occupied())
@@ -23,13 +23,15 @@ class Rock:
     def get_occupied(self):
         for x in range(self.width):
             for y in range(self.height):
-                if self.rock_lines[x][y] == "#":
-                    yield self.x + x, self.y + y
+                print(f"trying {x},{y} {self.width} {self.height}")
+                print(f"{x},{y} {self.rock_lines[y]}")
+                if self.rock_lines[y][x] == "#":
+                    yield self.x + x, self.y + self.height - y
 
 
     @property
     def width(self):
-        return max(*map(lambda rl: len(rl), self.rock_lines))
+        return max(map(lambda rl: len(rl), self.rock_lines))
 
     @property
     def height(self):
@@ -48,13 +50,14 @@ class Cave:
         self.grid.update(positions)
 
 def part_1(rock_input, jets):
-    rocks_chars = rock_input.split("\n\n")
-    print(rocks_chars)
+    rocks_chars = rock_input.rstrip().split("\n\n")
     cave = Cave()
     jet_index = 0
     for i in range(2022):
         step = i%len(rocks_chars)
         rock = Rock(cave, rocks_chars[step])
+        print(f"ROCK {i}")
+        print(rock.rock_lines)
         while not rock.is_stopped():
             rock.jet(jets[jet_index])
             rock.drop()
@@ -64,22 +67,24 @@ def part_1(rock_input, jets):
 
 def get_rocks():
     return """####
-    .#.
-    ###
-    .#.
 
-    ..#
-    ..#
-    ###
+.#.
+###
+.#.
 
-    #
-    #
-    #
-    #
+..#
+..#
+###
 
-    ##
-    ##
-    """
+#
+#
+#
+#
+
+##
+##
+"""
+
 
 def get_jets():
     return ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
