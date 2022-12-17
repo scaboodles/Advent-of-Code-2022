@@ -55,11 +55,21 @@ class Cave:
     def overlaps(self, positions):
         return self.grid.intersection(set(positions))
 
+    def print_cave(self):
+        for y in range(self.highest_point(), 0, -1):
+            line = ""
+            for x in range(7):
+                line += "#" if self.has((x,y)) else " "
+            print(line)
+                
+    def has(self, item):
+        return item in self.grid
+
 def part_1(rock_input, jets):
     rocks_chars = rock_input.rstrip().split("\n\n")
     cave = Cave()
     jet_index = 0
-    for i in range(2022):
+    for i in range(3):
         step = i%len(rocks_chars)
         rock = Rock(cave, rocks_chars[step])
         while True:
@@ -69,6 +79,8 @@ def part_1(rock_input, jets):
                 break
             
         rock.settle(cave) 
+        print("~~~~~~~~~~~~~")
+        cave.print_cave()
     return cave.highest_point()
 
 def get_rocks():
