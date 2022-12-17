@@ -14,19 +14,22 @@ class Rock:
             case ">":
                 self.x = min(self.x + 1, 6 - self.width)
     
-    def drop(self):
-        self.y -= 1 
+    def try_drop(self, cave):
+        would_be_occupied = self.get_occupied(self.y - 1)
+        if cave.overlaps(would_be_occupied):
+            return False
+        else:
+            self.y -= 1
+            return True
 
     def settle(self,cave):
-        return cave.add_occupied(self.get_occupied())
+        return cave.add_occupied(self.get_occupied(self.y))
     
-    def get_occupied(self):
+    def get_occupied(self, abs_y):
         for x in range(self.width):
             for y in range(self.height):
-                print(f"trying {x},{y} {self.width} {self.height}")
-                print(f"{x},{y} {self.rock_lines[y]}")
                 if self.rock_lines[y][x] == "#":
-                    yield self.x + x, self.y + self.height - y
+                    yield self.x + x, abs_y + self.height - y
 
 
     @property
@@ -39,7 +42,7 @@ class Rock:
 
 class Cave:
     def __init__(self):
-        self.grid = set()
+        self.grid = set([(x,-1) for x in range(7)])
 
     def highest_point(self):
         if len(self.grid):
@@ -49,6 +52,9 @@ class Cave:
     def add_occupied(self, positions):
         self.grid.update(positions)
 
+    def overlaps(self, positions):
+        return self.grid.intersection(set(positions))
+
 def part_1(rock_input, jets):
     rocks_chars = rock_input.rstrip().split("\n\n")
     cave = Cave()
@@ -56,14 +62,14 @@ def part_1(rock_input, jets):
     for i in range(2022):
         step = i%len(rocks_chars)
         rock = Rock(cave, rocks_chars[step])
-        print(f"ROCK {i}")
-        print(rock.rock_lines)
-        while not rock.is_stopped():
+        while True:
             rock.jet(jets[jet_index])
-            rock.drop()
             jet_index = (jet_index + 1) % len(jets)
+            if not rock.try_drop(cave):
+                break
             
         rock.settle(cave) 
+    return cave.highest_point()
 
 def get_rocks():
     return """####
