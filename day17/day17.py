@@ -44,9 +44,7 @@ class Cave:
         self.grid = set([(x,-1) for x in range(7)])
 
     def highest_point(self):
-        if len(self.grid):
-            return max(*map(lambda pos:pos[1], self.grid))
-        return 0
+        return 1+max(*map(lambda pos:pos[1], self.grid))
 
     def add_occupied(self, positions):
         self.grid.update(positions)
@@ -81,7 +79,7 @@ def part_1(rock_input, jets):
     rocks_chars = rock_input.rstrip().split("\n\n")
     cave = Cave()
     jet_index = 0
-    for i in range(3):
+    for i in range(2):
         step = i%len(rocks_chars)
         rock = Rock(cave, rocks_chars[step])
         while True:
