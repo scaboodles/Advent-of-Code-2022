@@ -12,8 +12,7 @@ class Rock:
             case "<":
                 self.x = max(self.x - 1, 0)
             case ">":
-                self.x = min(self.x + 1, 7 - self.width)
-        # print(f"Jet {dir} {self.x}")
+                self.x = min(self.x + 1, 6 - self.width)
     
     def try_drop(self, cave):
         would_be_occupied = self.get_occupied(self.y - 1)
@@ -32,7 +31,6 @@ class Rock:
                 if self.rock_lines[y][x] == "#":
                     yield self.x + x, abs_y + self.height - y
 
-
     @property
     def width(self):
         return max(map(lambda rl: len(rl), self.rock_lines))
@@ -44,11 +42,11 @@ class Rock:
 class Cave:
     def __init__(self):
         self.grid = set([(x,-1) for x in range(7)])
-        print(self.grid)
 
     def highest_point(self):
         if len(self.grid):
-            return 1 + max(*map(lambda pos:pos[1], self.grid))
+            return max(*map(lambda pos:pos[1], self.grid))
+        return 0
 
     def add_occupied(self, positions):
         self.grid.update(positions)
@@ -60,31 +58,41 @@ class Cave:
         for y in range(self.highest_point(), -1, -1):
             line = ""
             for x in range(7):
-                line += "#" if self.has((x,y)) else "."
+                line += "#" if self.has((x,y)) else " "
             print(line)
                 
     def has(self, item):
         return item in self.grid
 
+def print_rock_frame(cave, rock):
+    for y in range(cave.highest_point() + 3 + rock.height, -1, -1):
+        line = ""
+        for x in range(7):
+            if (x,y) in rock.get_occupied(rock.y):
+                line+="@"
+            elif cave.has((x,y)):
+                line+="#"
+            else:
+                line+="."
+        print(line)
+
+    
 def part_1(rock_input, jets):
     rocks_chars = rock_input.rstrip().split("\n\n")
     cave = Cave()
     jet_index = 0
-    # for i in range(2022):
     for i in range(3):
-    # for i in range(1):
         step = i%len(rocks_chars)
         rock = Rock(cave, rocks_chars[step])
         while True:
+            print_rock_frame(cave, rock)
+            print("~~~~~~~~~~~~~")
             rock.jet(jets[jet_index])
             jet_index = (jet_index + 1) % len(jets)
             if not rock.try_drop(cave):
                 break
             
         rock.settle(cave) 
-        print("")
-        cave.print_cave()
-        print("~~~~~~~~~~~~~")
     return cave.highest_point()
 
 def get_rocks():
