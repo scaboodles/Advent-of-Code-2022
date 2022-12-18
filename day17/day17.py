@@ -55,6 +55,13 @@ class Cave:
 
     def add_occupied(self, positions):
         self.grid.update(positions)
+        maxes = [-1 for i in range(7)]
+        for x,y in self.grid:
+            if maxes[x] < y:
+                maxes[x] = y 
+        min_height = min(*maxes)
+        self.grid = set(filter(lambda pos:pos[1]>=min_height, self.grid))
+
 
     def overlaps(self, positions):
         return self.grid.intersection(set(positions))
@@ -86,7 +93,10 @@ def part_1(rock_input, jets):
     rocks_chars = rock_input.rstrip().split("\n\n")
     cave = Cave()
     jet_index = 0
-    for i in range(2022):
+    for i in range(1000000000000):
+        if i % 1000 == 0:
+            print(i)
+            print(len(cave.grid))
     # for i in range(4):
         step = i%len(rocks_chars)
         rock = Rock(cave, rocks_chars[step])
@@ -125,6 +135,7 @@ def get_rocks():
 
 
 def get_jets():
-    return ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
+    file = open("./input.txt", "r").read().rstrip()
+    return file
 
 print(f"part 1 result: {part_1(get_rocks(), get_jets())}")
