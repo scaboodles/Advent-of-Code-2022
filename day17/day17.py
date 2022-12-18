@@ -1,10 +1,8 @@
 class Rock:
     def __init__(self, cave, rock_chars):
         self.rock_lines = rock_chars.split("\n")
-        self.y = cave.highest_point() + 3 + self.height
+        self.y = cave.highest_point() + 2 + self.height
         self.x = 2
-        print(f"current rock height: {self.height}")
-        print(f"current rock y pos: {self.y}")
 
     def is_stopped(self):
         return self.y == self.height
@@ -14,7 +12,7 @@ class Rock:
             case "<":
                 self.x = max(self.x - 1, 0)
             case ">":
-                self.x = min(self.x + 1, 6 - self.width)
+                self.x = min(self.x + 1, 7 - self.width)
     
     def try_drop(self, cave):
         would_be_occupied = self.get_occupied(self.y - 1)
@@ -31,7 +29,7 @@ class Rock:
         for x in range(self.width):
             for y in range(self.height):
                 if self.rock_lines[y][x] == "#":
-                    yield self.x + x, abs_y + self.height - y
+                    yield self.x + x, abs_y - y
 
     @property
     def width(self):
@@ -47,7 +45,6 @@ class Cave:
 
     def highest_point(self):
         highest = 1+max(*map(lambda pos:pos[1], self.grid))
-        print(f"highest point: {highest}")
         return highest
 
     def add_occupied(self, positions):
@@ -83,12 +80,12 @@ def part_1(rock_input, jets):
     rocks_chars = rock_input.rstrip().split("\n\n")
     cave = Cave()
     jet_index = 0
-    for i in range(2):
+    for i in range(2022):
         step = i%len(rocks_chars)
         rock = Rock(cave, rocks_chars[step])
         while True:
-            print_rock_frame(cave, rock)
-            print("~~~~~~~~~~~~~")
+            #print_rock_frame(cave, rock)
+            #print("~~~~~~~~~~~~~")
             rock.jet(jets[jet_index])
             jet_index = (jet_index + 1) % len(jets)
             if not rock.try_drop(cave):
