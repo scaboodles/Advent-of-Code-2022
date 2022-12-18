@@ -2,7 +2,7 @@ class Rock:
     def __init__(self, cave, rock_chars):
         self.rock_lines = rock_chars.split("\n")
         self.y = cave.highest_point() + 3 + self.height
-        self.x = 1
+        self.x = 2
 
     def is_stopped(self):
         return self.y == self.height
@@ -12,7 +12,8 @@ class Rock:
             case "<":
                 self.x = max(self.x - 1, 0)
             case ">":
-                self.x = min(self.x + 1, 6 - self.width)
+                self.x = min(self.x + 1, 7 - self.width)
+        # print(f"Jet {dir} {self.x}")
     
     def try_drop(self, cave):
         would_be_occupied = self.get_occupied(self.y - 1)
@@ -59,8 +60,8 @@ class Cave:
         for y in range(self.highest_point(), -1, -1):
             line = ""
             for x in range(7):
-                line += "#" if self.has((x,y)) else " "
-            # print(line)
+                line += "#" if self.has((x,y)) else "."
+            print(line)
                 
     def has(self, item):
         return item in self.grid
@@ -69,7 +70,8 @@ def part_1(rock_input, jets):
     rocks_chars = rock_input.rstrip().split("\n\n")
     cave = Cave()
     jet_index = 0
-    for i in range(2022):
+    # for i in range(2022):
+    for i in range(3):
     # for i in range(1):
         step = i%len(rocks_chars)
         rock = Rock(cave, rocks_chars[step])
@@ -80,8 +82,9 @@ def part_1(rock_input, jets):
                 break
             
         rock.settle(cave) 
-        # print("~~~~~~~~~~~~~")
-        # cave.print_cave()
+        print("")
+        cave.print_cave()
+        print("~~~~~~~~~~~~~")
     return cave.highest_point()
 
 def get_rocks():
