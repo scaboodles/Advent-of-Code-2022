@@ -7,15 +7,21 @@ class Rock:
     def is_stopped(self):
         return self.y == self.height
 
-    def jet(self, dir):
+    def try_jet(self, dir, cave):
+        x = self.x
         match dir:
             case "<":
-                self.x = max(self.x - 1, 0)
+                x = max(x - 1, 0)
             case ">":
-                self.x = min(self.x + 1, 7 - self.width)
+                x = min(x + 1, 7 - self.width)
+        would_be_occupied = self.get_occupied(x, self.y)
+
+        if not cave.overlaps(would_be_occupied):
+            self.x = x
     
+
     def try_drop(self, cave):
-        would_be_occupied = self.get_occupied(self.y - 1)
+        would_be_occupied = self.get_occupied(self.x, self.y - 1)
         if cave.overlaps(would_be_occupied):
             return False
         else:
@@ -23,13 +29,13 @@ class Rock:
             return True
 
     def settle(self,cave):
-        return cave.add_occupied(self.get_occupied(self.y))
+        return cave.add_occupied(self.get_occupied(self.x, self.y))
     
-    def get_occupied(self, abs_y):
+    def get_occupied(self, abs_x, abs_y):
         for x in range(self.width):
             for y in range(self.height):
                 if self.rock_lines[y][x] == "#":
-                    yield self.x + x, abs_y - y
+                    yield abs_x + x, abs_y - y
 
     @property
     def width(self):
@@ -64,10 +70,10 @@ class Cave:
         return item in self.grid
 
 def print_rock_frame(cave, rock):
-    for y in range(cave.highest_point() + 3 + rock.height, -1, -1):
+    for y in range(cave.highest_point() + 2 + rock.height, -1, -1):
         line = ""
         for x in range(7):
-            if (x,y) in rock.get_occupied(rock.y):
+            if (x,y) in rock.get_occupied(rock.x, rock.y):
                 line+="@"
             elif cave.has((x,y)):
                 line+="#"
@@ -81,15 +87,18 @@ def part_1(rock_input, jets):
     cave = Cave()
     jet_index = 0
     for i in range(2022):
+    # for i in range(4):
         step = i%len(rocks_chars)
         rock = Rock(cave, rocks_chars[step])
         while True:
-            #print_rock_frame(cave, rock)
-            #print("~~~~~~~~~~~~~")
-            rock.jet(jets[jet_index])
+            # print_rock_frame(cave, rock)
+            # print("~~~~~~~~~~~~~")
+            rock.try_jet(jets[jet_index], cave)
             jet_index = (jet_index + 1) % len(jets)
             if not rock.try_drop(cave):
                 break
+        # print_rock_frame(cave, rock)
+        # print("~~~~~~~~~~~~~")
             
         rock.settle(cave) 
     return cave.highest_point()
