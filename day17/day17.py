@@ -3,6 +3,8 @@ class Rock:
         self.rock_lines = rock_chars.split("\n")
         self.y = cave.highest_point() + 3 + self.height
         self.x = 2
+        print(f"current rock height: {self.height}")
+        print(f"current rock y pos: {self.y}")
 
     def is_stopped(self):
         return self.y == self.height
@@ -44,7 +46,9 @@ class Cave:
         self.grid = set([(x,-1) for x in range(7)])
 
     def highest_point(self):
-        return 1+max(*map(lambda pos:pos[1], self.grid))
+        highest = 1+max(*map(lambda pos:pos[1], self.grid))
+        print(f"highest point: {highest}")
+        return highest
 
     def add_occupied(self, positions):
         self.grid.update(positions)
