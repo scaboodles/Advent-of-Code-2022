@@ -43,11 +43,11 @@ class Rock:
 class Cave:
     def __init__(self):
         self.grid = set([(x,-1) for x in range(7)])
+        print(self.grid)
 
     def highest_point(self):
         if len(self.grid):
-            return max(*map(lambda pos:pos[1], self.grid))
-        return 0
+            return 1 + max(*map(lambda pos:pos[1], self.grid))
 
     def add_occupied(self, positions):
         self.grid.update(positions)
@@ -56,11 +56,11 @@ class Cave:
         return self.grid.intersection(set(positions))
 
     def print_cave(self):
-        for y in range(self.highest_point(), 0, -1):
+        for y in range(self.highest_point(), -1, -1):
             line = ""
             for x in range(7):
                 line += "#" if self.has((x,y)) else " "
-            print(line)
+            # print(line)
                 
     def has(self, item):
         return item in self.grid
@@ -69,7 +69,8 @@ def part_1(rock_input, jets):
     rocks_chars = rock_input.rstrip().split("\n\n")
     cave = Cave()
     jet_index = 0
-    for i in range(3):
+    for i in range(2022):
+    # for i in range(1):
         step = i%len(rocks_chars)
         rock = Rock(cave, rocks_chars[step])
         while True:
@@ -79,8 +80,8 @@ def part_1(rock_input, jets):
                 break
             
         rock.settle(cave) 
-        print("~~~~~~~~~~~~~")
-        cave.print_cave()
+        # print("~~~~~~~~~~~~~")
+        # cave.print_cave()
     return cave.highest_point()
 
 def get_rocks():
